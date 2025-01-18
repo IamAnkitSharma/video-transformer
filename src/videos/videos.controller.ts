@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Body,
   UploadedFile,
   UseInterceptors,
   Query,
@@ -9,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { VideosService } from './videos.service';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { MergeVideoDTO, TrimVideoDTO, UploadVideoDTO } from './video.dto';
 
 @Controller('videos')
 export class VideosController {
@@ -18,13 +21,24 @@ export class VideosController {
    * Upload a video with size and duration constraints.
    */
   @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   async uploadVideo(
     @UploadedFile() file: Express.Multer.File,
-    @Query('maxSize') maxSize: string,
-    @Query('minDuration') minDuration: string,
-    @Query('maxDuration') maxDuration: string,
+    @Query() uploadVideoDTO: UploadVideoDTO
   ) {
+    const { maxSize, minDuration, maxDuration } = uploadVideoDTO;
     const maxSizeBytes = this.videosService.convertSizeToBytes(
       maxSize || '20mb',
     );
@@ -46,7 +60,39 @@ export class VideosController {
   }
 
   /**
-   * List all videos
+   * Trim an uploaded video by specifying start and end times.
+   */
+  @Post('trim')
+  async trimVideo(
+    @Body() trimVideoDto: TrimVideoDTO
+  ) {
+    const { videoId, start, end } = trimVideoDto;
+    const trimmedVideo = await this.videosService.trimVideo(
+      videoId,
+      start,
+      end,
+    );
+    return trimmedVideo;
+  }
+
+  /**
+   * Merge multiple uploaded videos into one.
+   */
+  @Post('merge')
+  async mergeVideos(@Body() mergeVideosDTO: MergeVideoDTO) {
+    const { videoIds } = mergeVideosDTO;
+    if (!Array.isArray(videoIds) || videoIds.length < 2) {
+      throw new BadRequestException(
+        'At least two video IDs are required for merging.',
+      );
+    }
+
+    const mergedVideo = await this.videosService.mergeVideos(videoIds);
+    return mergedVideo;
+  }
+
+  /**
+   * List all videos from the database.
    */
   @Get()
   async listVideos() {

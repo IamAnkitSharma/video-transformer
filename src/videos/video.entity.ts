@@ -14,7 +14,7 @@ export class Video {
   name: string;
 
   @Column()
-  size: number;
+  sizeInBytes: number;
 
   @Column()
   durationInSeconds: number;
