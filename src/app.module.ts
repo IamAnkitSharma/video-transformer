@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { Video } from './videos/video.entity';
+import { Video } from './videos/entities/video.entity';
 import { VideosModule } from './videos/videos.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
-import { SharedLink } from './videos/shared-link.entity';
+import { SharedLink } from './videos/entities/shared-link.entity';
 
 @Module({
   imports: [

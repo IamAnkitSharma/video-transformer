@@ -11,9 +11,10 @@ async function bootstrap() {
   }));
 
   const config = new DocumentBuilder()
-    .setTitle('Videoverse Video Files')
+    .setTitle('video-transformer Video Files')
     .setDescription('REST APIs for Video Files')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);

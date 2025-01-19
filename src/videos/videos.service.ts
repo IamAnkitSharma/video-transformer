@@ -5,8 +5,8 @@ import {
   } from '@nestjs/common';
   import { InjectRepository } from '@nestjs/typeorm';
   import { Repository } from 'typeorm';
-  import { Video } from './video.entity';
-  import { SharedLink } from './shared-link.entity';
+  import { Video } from './entities/video.entity';
+  import { SharedLink } from './entities/shared-link.entity';
   import * as fs from 'fs';
   import * as path from 'path';
   import * as ffmpeg from 'fluent-ffmpeg';
@@ -195,7 +195,7 @@ import {
       return path.join('uploads', `merged_${Date.now()}.mp4`);
     }
 
-    async generateSharedLink(videoId: string, expiry: Date): Promise<string> {
+    async generateSharedLink(videoId: string, expiry: Date) {
         const video = await this.videoRepository.findOneBy({
             id: videoId
         });
@@ -205,7 +205,10 @@ import {
         link.expiry = expiry;
       
         const savedLink = await this.sharedLinkRepository.save(link);
-        return `${process.env.BASE_URL}/videos/shared/${savedLink.id}`;
+        return {
+            link: `${process.env.BASE_URL}/videos/shared/${savedLink.id}`,
+            expiry: savedLink.expiry
+        }
     }
   }
   

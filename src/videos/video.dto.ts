@@ -63,8 +63,9 @@ export class ShareVideoLinkDTO {
   videoId: string;
 
   @ApiProperty({
-    description: 'Starting point',
+    description: 'Expiry in seconds',
     nullable: true,
+    example: '7200',
   })
   @IsOptional()
   expiryInSeconds?: number;

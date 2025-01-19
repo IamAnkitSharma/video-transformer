@@ -9,16 +9,20 @@ import {
     Get,
     NotFoundException,
     Param,
+    UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { VideosService } from './videos.service';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { MergeVideoDTO, ShareVideoLinkDTO, TrimVideoDTO, UploadVideoDTO } from './video.dto';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
+import { ApiTokenGuard } from '../auth/auth.guard';
 
 @Controller('videos')
+@ApiBearerAuth()
+@UseGuards(ApiTokenGuard)
 export class VideosController {
 
     DEFAULT_VIDEO_SHARING_EXPIRY_IN_SECONDS: number = 86400;
@@ -54,6 +58,7 @@ export class VideosController {
         @Query() uploadVideoDTO: UploadVideoDTO
     ) {
         const { maxSize, minDuration, maxDuration } = uploadVideoDTO;
+
         const maxSizeBytes = this.videosService.convertSizeToBytes(
             maxSize || '20mb',
         );
@@ -131,7 +136,7 @@ export class VideosController {
             videoId,
             expiryDate,
         );
-        return { link: sharedLink };
+        return { link: sharedLink.link, expiry: sharedLink.expiry };
     }
 
     @Get('shared/:id')
@@ -141,12 +146,12 @@ export class VideosController {
             throw new NotFoundException('Video not found');
         }
 
-        if (shared.expiry < new Date()) {
+        if (new Date(shared.expiry).getTime() <= new Date().getTime()) {
             throw new NotFoundException('The video link has expired');
         }
 
         return { 
-            link: shared.video.url
+            link: `${process.env.BASE_URL}/${shared.video.url}`
         };
     }
 }
