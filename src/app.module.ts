@@ -5,7 +5,7 @@ import { Video } from './videos/video.entity';
 import { VideosModule } from './videos/videos.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
-// import { SharedLink } from './videos/shared-link.entity';
+import { SharedLink } from './videos/shared-link.entity';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import * as path from 'path';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'video-api.db',
-      entities: [Video],
+      entities: [Video, SharedLink],
       synchronize: true, // Use only in development
     }),
     VideosModule,

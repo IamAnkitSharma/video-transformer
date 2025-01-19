@@ -1,22 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class UploadVideoDTO {
   @ApiProperty({
     description: 'Maximum size of the video',
-    examples: ['100mb', '1gb'],
     nullable: true,
+    example: '100mb',
   })
+  @IsOptional()
   maxSize?: string;
 
   @ApiProperty({
     description: 'Minimum duration in seconds',
     nullable: true,
+    example: '1',
   })
+  @IsOptional()
   minDuration?: string;
+
   @ApiProperty({
     description: 'Maximum duration in seconds',
     nullable: true,
+    example: '21600',
   })
+  @IsOptional()
   maxDuration?: string;
 }
 
@@ -28,14 +35,18 @@ export class TrimVideoDTO {
 
   @ApiProperty({
     description: 'Starting point',
+    example: '1',
     nullable: true,
   })
-  start?: string;
+  @IsOptional()
+  start?: number;
   @ApiProperty({
     description: 'Ending point',
+    example: '5',
     nullable: true,
   })
-  end?: string;
+  @IsOptional()
+  end?: number;
 }
 
 export class MergeVideoDTO {
@@ -43,4 +54,18 @@ export class MergeVideoDTO {
     description: 'IDs of the video to be merged',
   })
   videoIds: string[];
+}
+
+export class ShareVideoLinkDTO {
+  @ApiProperty({
+    description: 'ID of the video to be trimmed',
+  })
+  videoId: string;
+
+  @ApiProperty({
+    description: 'Starting point',
+    nullable: true,
+  })
+  @IsOptional()
+  expiryInSeconds?: number;
 }
