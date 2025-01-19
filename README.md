@@ -102,3 +102,9 @@ npm run start:dev
 ```
 Ensure **FFmpeg** is installed on your system before running the application.
 
+
+### Coverage Report
+
+![coverage report](https://github.com/IamAnkitSharma/video-transformer/blob/main/coverage.png?raw=true)
+
+Here app.module.ts and main.ts are reinitialized while testing hence they are not covered.
