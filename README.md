@@ -74,6 +74,13 @@ To run tests locally:
 npm run test
 ```
 
+
+To get test coverage report:
+```bash
+npm run test:cov
+```
+
+
 ---
 
 ## How to Run using Docker
